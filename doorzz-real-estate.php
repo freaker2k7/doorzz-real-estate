@@ -16,7 +16,7 @@
  * Author:            Evgeny Kolyakov
  * Author URI:        https://doorzz.com
  * Text Domain:       real-estate
- * License:           GPL-3.0+
+ * License:           GPL-2.0+
  * License URI:       https://www.gnu.org/licenses/gpl.html
  * Domain Path:       /languages
  * GitHub Plugin URI: https://github.com/freaker2k7/doorzz-real-estate
@@ -29,13 +29,14 @@ if (!defined('WPINC')) {
 	die;
 }
 
-define('REAL_ESTATE_PLUGIN_FILE', __FILE__);
-define('REAL_ESTATE_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('DOORZZ_REAL_ESTATE_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
-require_once(REAL_ESTATE_PLUGIN_DIR . 'includes/core.php');
+require_once(DOORZZ_REAL_ESTATE_PLUGIN_DIR . 'includes/core.php');
 
-add_action('init', array('REAL_ESTATE', 'init'));
+add_action('init', array('DOORZZ_REAL_ESTATE', 'init'));
 
 if (is_admin()) {
-	add_action('admin_menu', array('REAL_ESTATE', 'menu'));
+	add_action('admin_menu', array('DOORZZ_REAL_ESTATE', 'menu'));
+	
+	register_activation_hook(__FILE__, array('DOORZZ_REAL_ESTATE', 'plugin_activation'));
 }
