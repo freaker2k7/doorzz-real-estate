@@ -14,7 +14,6 @@ require_once(REAL_ESTATE_PLUGIN_DIR . '/includes/apc.php');
  */
 final class REAL_ESTATE {
 	private const CACHE_PERIOD = 300; // Seconds
-	private const CREDENTIALS = /*REAL_ESTATE_PLUGIN_DIR .*/ '.wp2s3-credentials.json';
 	private const ROOT_URL = 'https://doorzz.com/';
 	private const CDN_URL = 'https://cdn.doorzz.com/';
 	private const LINK_TO_HID = 'https://dorz.me/id/';
@@ -99,10 +98,11 @@ final class REAL_ESTATE {
 			$params = explode(',', $atts['hid']);
 			$key = 'real_estate_output_' . $atts['hid'];
 		} else {
-			$atts['lat'] = isset($atts['lat']) ? $atts['lat'] : 32;
-			$atts['lng'] = isset($atts['lng']) ? $atts['lng'] : 34;
-			$params = array('lat' => $atts['lat'], 'lng' => $atts['lng']);
-			$key = 'real_estate_output_' . $atts['lat'] . '_' . $atts['lng'];
+			$params = array(
+				'lat' => isset($atts['lat']) ? $atts['lat'] : 32, 
+				'lng' => isset($atts['lng']) ? $atts['lng'] : 34
+			);
+			$key = 'real_estate_output_' . $params['lat'] . '_' . $params['lng'];
 		}
 		
 		$out = apc_fetch($key);
