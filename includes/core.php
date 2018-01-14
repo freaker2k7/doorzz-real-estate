@@ -84,7 +84,7 @@ final class DOORZZ_REAL_ESTATE {
 	
 	
 	/**
-	 * Activation.
+	 * Activation - Create table & populate it with default data.
 	 *
 	 * @since 1.0.0
 	 */
@@ -103,9 +103,9 @@ final class DOORZZ_REAL_ESTATE {
 		) $charset_collate;";
 		
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-		dbDelta($sql);
-		
-		self::_set_template();
+		if (dbDelta($sql, true)) {
+			self::_set_template();
+		}
 	}
 	
 	
@@ -157,7 +157,7 @@ final class DOORZZ_REAL_ESTATE {
 	 *
 	 * @since 1.0.0
 	 */
-	private static function _set_template($data = null, $rewrite = true) {
+	private static function _set_template($data = null, $name = 'default') {
 		global $wpdb;
 		
 		if (!$data) {
@@ -170,7 +170,7 @@ final class DOORZZ_REAL_ESTATE {
 			array('%s', '%s', '%s')
 		);
 		
-		wp_cache_set('real_estate_template', $data);
+		wp_cache_set('real_estate_template' . $name, $data);
 	}
 	
 	
@@ -180,8 +180,10 @@ final class DOORZZ_REAL_ESTATE {
 	 * @since 1.0.0
 	 */
 	private static function _get_template($use_cache = false, $name = 'default') {
+		$key = 'real_estate_template' . $name;
+		
 		if ($use_cache) {
-			$data = wp_cache_get('real_estate_template');
+			$data = wp_cache_get($key);
 			
 			if ($data) {
 				return $data;
@@ -190,9 +192,9 @@ final class DOORZZ_REAL_ESTATE {
 		
 		global $wpdb;
 		
-		$template = $wpdb->get_row( "SELECT data FROM " . self::_get_table_name($wpdb) . " WHERE name = 'default'", ARRAY_A );
+		$template = $wpdb->get_row("SELECT data FROM " . self::_get_table_name($wpdb) . " WHERE name = 'default'", ARRAY_A);
 		
-		wp_cache_set('real_estate_template', $template['data']);
+		wp_cache_set($key, $template['data']);
 		
 		return $template['data'];
 	}
