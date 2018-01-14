@@ -109,9 +109,9 @@ final class DOORZZ_REAL_ESTATE {
 		
 		$out = wp_cache_get($key);
 		
-		// if ($out) {
-		// 	return $out->data;
-		// }
+		if ($out) {
+			return $out->data;
+		}
 		
 		try {
 			$items = json_decode(self::_get_items($params), true);
@@ -123,7 +123,7 @@ final class DOORZZ_REAL_ESTATE {
 		
 		$out = self::_render($items);
 		
-		// wp_cache_set($key, $out, null, 300);
+		wp_cache_set($key, $out, null, 300);
 		
 		return $out;
 	}
@@ -168,7 +168,7 @@ final class DOORZZ_REAL_ESTATE {
 			) 
 		);
 		
-		// wp_cache_set('real_estate_template', $data);
+		wp_cache_set('real_estate_template', $data);
 	}
 	
 	
@@ -181,16 +181,16 @@ final class DOORZZ_REAL_ESTATE {
 		if ($use_cache) {
 			$data = wp_cache_get('real_estate_template');
 			
-			// if ($data) {
-			// 	return $data;
-			// }
+			if ($data) {
+				return $data;
+			}
 		}
 		
 		global $wpdb;
 		
 		$template = $wpdb->get_row( "SELECT data FROM " . self::_get_table_name($wpdb) . " WHERE name = 'default'", ARRAY_A );
 		
-		// wp_cache_set('real_estate_template', $template['data']);
+		wp_cache_set('real_estate_template', $template['data']);
 		
 		return $template['data'];
 	}
