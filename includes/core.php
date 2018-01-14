@@ -108,15 +108,8 @@ final class REAL_ESTATE {
 		$out = apc_fetch($key);
 		$time = time();
 		
-		var_dump($out);
-		
 		if ($out) {
 			if ($out->timestamp > $time - self::CACHE_PERIOD) {
-				
-				echo '<pre>';
-				var_dump($out);
-				echo '</pre>';
-				
 				return $out->data;
 			}
 		}
