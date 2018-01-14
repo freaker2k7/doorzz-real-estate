@@ -301,8 +301,8 @@ final class DOORZZ_REAL_ESTATE {
 				
 				foreach ($items as $idx => $item) {
 					$item['pics'] = json_decode($item['pics'], true);
-					$item['free_text'] = esc_html(json_decode($item['free_text']), true);
 					$item['formatted_location'] = json_decode($item['formatted_location'], true);
+					$item['free_text'] = esc_html(self::_xss_cleanup(json_decode($item['free_text'])), true);
 					
 					if (!count($item['pics'])) {
 						$img = self::CDN_URL . 'none';
@@ -312,19 +312,21 @@ final class DOORZZ_REAL_ESTATE {
 						$img = self::CDN_URL . 'uploads/' . $item['pics'][0]['_id'] . '.jpg';
 					}
 					
-					$t = str_replace('{{LINK_TO_HID}}', esc_url(self::LINK_TO_HID . $item['hid']), $template);
-					$t = str_replace('{img}', esc_url($img), $t);
-					$t = str_replace('{name}', $item['name'], $t);
-					$t = str_replace('{price}', $item['param_price'], $t);
+					$t = str_replace('{{LINK_TO_HID}}', esc_url(self::LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
+					$t = str_replace('{img}', esc_url(self::_xss_cleanup($img)), $t);
+					$t = str_replace('{name}', self::_xss_cleanup($item['name']), $t);
+					$t = str_replace('{price}', self::_xss_cleanup($item['param_price']), $t);
 					$t = str_replace('{period}', self::$PERIODS[$item['period']], $t);
-					$t = str_replace('{size}', $item['param_size'], $t);
-					$t = str_replace('{title}', $item['name'], $t);
+					$t = str_replace('{size}', self::_xss_cleanup($item['param_size']), $t);
+					$t = str_replace('{title}', self::_xss_cleanup($item['name']), $t);
 					$t = str_replace('{type}', $item['filter_sell'] ? 'sale' : 'rent', $t);
 					$t = str_replace('{subtype}', $item['filter_house'] ? 'house' : ($item['filter_apartment'] ? 'apartment' : 'commercial'), $t);
 					
-					$t = str_replace('{location}', ($item['formatted_location']['en']['street'] ? $item['formatted_location']['en']['street'] . ', ' : '') . 
+					$t = str_replace('{location}', self::_xss_cleanup(
+						($item['formatted_location']['en']['street'] ? $item['formatted_location']['en']['street'] . ', ' : '') . 
 						($item['formatted_location']['en']['city'] ? $item['formatted_location']['en']['city'] . ', ' : '') . 
-						$item['formatted_location']['en']['country'], $t);
+						$item['formatted_location']['en']['country']
+					), $t);
 					
 					$t = str_replace('{free_text}', $item['free_text'], $t); // This might add the most text, so let's add it last.
 					
@@ -346,5 +348,15 @@ final class DOORZZ_REAL_ESTATE {
 	 */
 	private static function _linerize($content) {
 		return preg_replace('/\n|\t|\r|(\s\s+)/', ' ', $content);
+	}
+	
+	
+	/**
+	 * Sanitize data.
+	 *
+	 * @since 1.0.0
+	 */
+	private static function _xss_cleanup($content) {
+		return filter_var($content, FILTER_SANITIZE_STRING);
 	}
 }
