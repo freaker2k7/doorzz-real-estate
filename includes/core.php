@@ -300,9 +300,25 @@ final class DOORZZ_REAL_ESTATE {
 				$template = self::_linerize($template);
 				
 				foreach ($items as $idx => $item) {
-					$item['pics'] = json_decode($item['pics'], true);
-					$item['formatted_location'] = json_decode($item['formatted_location'], true);
-					$item['free_text'] = esc_html(self::_xss_cleanup(json_decode($item['free_text'])), true);
+					try {
+						$item['pics'] = json_decode($item['pics'], true);
+					} catch (Exception $e) {
+						$item['pics'] = array();
+					}
+					
+					try {
+						$item['formatted_location'] = json_decode($item['formatted_location'], true);
+					} catch (Exception $e) {
+						$item['formatted_location'] = array('en' => array());
+					}
+					
+					try {
+						$item['free_text'] = json_decode($item['free_text'], true);
+					} catch (Exception $e) {
+						if (empty($item['free_text'])) {
+							$item['free_text'] = 'Doorzz.com';
+						}
+					}
 					
 					if (!count($item['pics'])) {
 						$img = self::CDN_URL . 'none';
@@ -323,12 +339,13 @@ final class DOORZZ_REAL_ESTATE {
 					$t = str_replace('{subtype}', $item['filter_house'] ? 'house' : ($item['filter_apartment'] ? 'apartment' : 'commercial'), $t);
 					
 					$t = str_replace('{location}', self::_xss_cleanup(
-						($item['formatted_location']['en']['street'] ? $item['formatted_location']['en']['street'] . ', ' : '') . 
-						($item['formatted_location']['en']['city'] ? $item['formatted_location']['en']['city'] . ', ' : '') . 
+						(isset($item['formatted_location']['en']['street']) ? $item['formatted_location']['en']['street'] . ', ' : '') . 
+						(isset($item['formatted_location']['en']['city']) ? $item['formatted_location']['en']['city'] . ', ' : '') . 
 						$item['formatted_location']['en']['country']
 					), $t);
 					
-					$t = str_replace('{free_text}', $item['free_text'], $t); // This might add the most text, so let's add it last.
+					// This might add the most text, so let's add it last.
+					$t = str_replace('{free_text}', esc_html(self::_xss_cleanup($item['free_text'])), $t);
 					
 					$out[] = $t;
 				}
