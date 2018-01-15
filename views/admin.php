@@ -7,15 +7,15 @@ if (!defined('WPINC') || !class_exists('DOORZZ_REAL_ESTATE')) {
 
 ?>
 <div class="wrap">
-	<form method="POST" action="?page=<?php echo self::SLAG ?>" id="DOORZZ_REAL_ESTATE_CONF_FORM">
+	<form method="POST" action="?page=<?php echo self::$SLAG ?>" id="DOORZZ_REAL_ESTATE_CONF_FORM">
 		<h1>Doorzz Real Estate (Settings)</h1>
 		<?php if (isset($error)) { ?>
 			<div class="error notice">
-				<p><?php _e($error, self::SLAG . '-error'); ?></p>
+				<p><?php _e($error, self::$SLAG . '-error'); ?></p>
 			</div>
 		<?php } else if (isset($success)) { ?>
 			<div class="updated notice">
-				<p><?php _e('Changes saved successfully!', self::SLAG . '-success'); ?></p>
+				<p><?php _e('Changes saved successfully!', self::$SLAG . '-success'); ?></p>
 			</div>
 		<?php } ?>
 		<div class="input-field" style="margin: 2rem 0">

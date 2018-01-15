@@ -11,14 +11,14 @@ if (!defined('WPINC')) {
  * @since 1.0.0
  */
 final class DOORZZ_REAL_ESTATE {
-	private const SLAG = 'doorzz-real-estate';
-	private const DBSLAG = 'doorzz_real_estate';
-	private const CACHE_PERIOD = 300; // Seconds
-	private const ROOT_URL = 'https://doorzz.com/';
-	private const CDN_URL = 'https://cdn.doorzz.com/';
-	private const LINK_TO_HID = 'https://dorz.me/id/';
+	private static $SLAG = 'doorzz-real-estate';
+	private static $DBSLAG = 'doorzz_real_estate';
+	private static $CACHE_PERIOD = 300; // Seconds
+	private static $ROOT_URL = 'https://doorzz.com/';
+	private static $CDN_URL = 'https://cdn.doorzz.com/';
+	private static $LINK_TO_HID = 'https://dorz.me/id/';
 	
-	private const DOORZZ_REAL_ESTATE_DEFAULT_TEMPLATE = 
+	private static $DOORZZ_REAL_ESTATE_DEFAULT_TEMPLATE = 
 '<a style="display: inline-block; width: 250px; height: 100%; vertical-align: top; margin: 0 10px; text-decoration: none;" href="{{LINK_TO_HID}}" target="_blank">
 	<h2 style="font-size: 1rem;">{title}</h2>
 	<div style="width: 100%; height: 100px; overflow: hidden; background: #efefef; position: relative;">
@@ -60,7 +60,7 @@ final class DOORZZ_REAL_ESTATE {
 	 * @since 1.0.0
 	 */
 	public static function menu() {
-		add_options_page('Real-Estate (Options)', 'Doorzz Real Estate', 'manage_options', self::SLAG, array('DOORZZ_REAL_ESTATE', 'plugin_options'));
+		add_options_page('Real-Estate (Options)', 'Doorzz Real Estate', 'manage_options', self::$SLAG, array('DOORZZ_REAL_ESTATE', 'plugin_options'));
 	}
 	
 	
@@ -115,7 +115,7 @@ final class DOORZZ_REAL_ESTATE {
 	 * @since 1.0.0
 	 */
 	public static function shortcode($atts = array(), $content = null, $tag = '') {
-		$key = self::DBSLAG . '_output';
+		$key = self::$DBSLAG . '_output';
 		$params = array();
 		
 		self::_populate_params($atts, $key, $params);
@@ -137,7 +137,7 @@ final class DOORZZ_REAL_ESTATE {
 			return '';
 		}
 		
-		$out = self::_render($items);
+		$out = self::_render($items, isset($params['lang']) ? $params['lang'] : 'en');
 		
 		wp_cache_set($key, $out, null, 300);
 		
@@ -151,7 +151,7 @@ final class DOORZZ_REAL_ESTATE {
 	 * @since 1.0.0
 	 */
 	private static function _get_table_name(&$wpdb = null) {
-		return $wpdb->prefix . self::DBSLAG;
+		return $wpdb->prefix . self::$DBSLAG;
 	}
 	
 	
@@ -164,7 +164,7 @@ final class DOORZZ_REAL_ESTATE {
 		global $wpdb;
 		
 		if (!$data) {
-			$data = self::DOORZZ_REAL_ESTATE_DEFAULT_TEMPLATE;
+			$data = self::$DOORZZ_REAL_ESTATE_DEFAULT_TEMPLATE;
 		}
 		
 		$wpdb->replace( 
@@ -261,7 +261,7 @@ final class DOORZZ_REAL_ESTATE {
 				'lat' => isset($atts['lat']) ? $atts['lat'] : 32, 
 				'lng' => isset($atts['lng']) ? $atts['lng'] : 34
 			);
-			$key = self::DBSLAG . '_output_' . $params['lat'] . '_' . $params['lng'];
+			$key = self::$DBSLAG . '_output_' . $params['lat'] . '_' . $params['lng'];
 		}
 		
 		if (isset($atts['limit'])) {
@@ -278,7 +278,7 @@ final class DOORZZ_REAL_ESTATE {
 	 */
 	private static function _get_items($params = []) {
 		$response = wp_remote_post(
-			WP_DEBUG ? 'http://localhost:3000/wp/list' : self::ROOT_URL . 'wp/list',
+			WP_DEBUG ? 'http://localhost:3000/wp/list' : self::$ROOT_URL . 'wp/list',
 			 array(
 			 	'method'		=> 'POST',
 				'headers'		=> array('Content-Type' => 'application/json'),
@@ -303,7 +303,7 @@ final class DOORZZ_REAL_ESTATE {
 	 *
 	 * @since 1.0.0
 	 */
-	private static function _render($items) {
+	private static function _render($items, $lang = 'en') {
 		$out = array(
 			'<div style="width: 100%; height: 250px; overflow-x: scroll; overflow-y: hidden;">',
 			'<div style="width: ' . (270 * count($items)) . 'px; height: 100%;">'
@@ -331,10 +331,17 @@ final class DOORZZ_REAL_ESTATE {
 							if ($item['formatted_location']) {
 								$item['formatted_location'] = json_decode($item['formatted_location'], true);
 							} else {
-								$item['formatted_location'] = array('en' => array());
+								$item['formatted_location'] = array();
 							}
 						} catch (Exception $e) {
-							$item['formatted_location'] = array('en' => array());
+							$item['formatted_location'] = array();
+						}
+						
+						$formatted_location = array();
+						if (array_key_exists($lang, $item['formatted_location'])) {
+							$formatted_location = $item['formatted_location'][$lang];
+						} elseif ($lang !== 'en' && array_key_exists('en', $item['formatted_location'])) {
+							$formatted_location = $item['formatted_location']['en'];
 						}
 						
 						try {
@@ -350,14 +357,14 @@ final class DOORZZ_REAL_ESTATE {
 						}
 						
 						if (!count($item['pics'])) {
-							$img = self::CDN_URL . 'none';
+							$img = self::$CDN_URL . 'none';
 						} else if (isset($item['pics'][0]['url'])) {
 							$img = $item['pics'][0]['url'];
 						} else {
-							$img = self::CDN_URL . 'uploads/' . $item['pics'][0]['_id'] . '.jpg';
+							$img = self::$CDN_URL . 'uploads/' . $item['pics'][0]['_id'] . '.jpg';
 						}
 						
-						$t = str_replace('{{LINK_TO_HID}}', esc_url(self::LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
+						$t = str_replace('{{LINK_TO_HID}}', esc_url(self::$LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
 						$t = str_replace('{img}', esc_url(self::_xss_cleanup($img)), $t);
 						$t = str_replace('{name}', self::_xss_cleanup($item['name']), $t);
 						$t = str_replace('{price}', self::_xss_cleanup($item['param_price']), $t);
@@ -368,9 +375,9 @@ final class DOORZZ_REAL_ESTATE {
 						$t = str_replace('{subtype}', $item['filter_house'] ? 'house' : ($item['filter_apartment'] ? 'apartment' : 'commercial'), $t);
 						
 						$t = str_replace('{location}', self::_xss_cleanup(
-							(!empty($item['formatted_location']['en']['street']) ? $item['formatted_location']['en']['street'] . ', ' : '') . 
-							(!empty($item['formatted_location']['en']['city']) ? $item['formatted_location']['en']['city'] . ', ' : '') . 
-							$item['formatted_location']['en']['country']
+							(!empty($formatted_location['street']) ? $formatted_location['street'] . ', ' : '') . 
+							(!empty($formatted_location['city']) ? $formatted_location['city'] . ', ' : '') . 
+							$formatted_location['country']
 						), $t);
 						
 						// This might add the most text, so let's add it last.
