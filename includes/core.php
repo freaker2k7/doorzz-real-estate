@@ -115,7 +115,7 @@ final class DOORZZ_REAL_ESTATE {
 	 * @since 1.0.0
 	 */
 	public static function shortcode($atts = array(), $content = null, $tag = '') {
-		$key = 'real_estate_output';
+		$key = self::DBSLAG . '_output';
 		$params = array();
 		
 		self::_populate_params($atts, $key, $params);
@@ -131,6 +131,9 @@ final class DOORZZ_REAL_ESTATE {
 		} catch (Exception $e) {
 			$items = [];
 			error_log($e->getMessage());
+		}
+		
+		if (!$items || array_key_exists('error', $items) && $items['error']) {
 			return '';
 		}
 		
@@ -206,6 +209,20 @@ final class DOORZZ_REAL_ESTATE {
 	 * @since 1.0.0
 	 */
 	private static function _populate_params($atts, &$key=null, &$params=null) {
+		if (isset($atts['lang'])) {
+			$params['lang'] = $atts['lang'];
+			$key .= '_' . $atts['lang'];
+		} else {
+			$key .= '_auto';
+		}
+		
+		if (isset($atts['zoom'])) {
+			$params['zoom'] = $atts['zoom'];
+			$key .= '_' . intval($atts['zoom']);
+		} else {
+			$key .= '_15';
+		}
+		
 		if (isset($atts['hid'])) {
 			$params['hid'] = explode(',', $atts['hid']);
 			$key .= '_' . $atts['hid'];
@@ -244,7 +261,7 @@ final class DOORZZ_REAL_ESTATE {
 				'lat' => isset($atts['lat']) ? $atts['lat'] : 32, 
 				'lng' => isset($atts['lng']) ? $atts['lng'] : 34
 			);
-			$key = 'real_estate_output_' . $params['lat'] . '_' . $params['lng'];
+			$key = self::DBSLAG . '_output_' . $params['lat'] . '_' . $params['lng'];
 		}
 		
 		if (isset($atts['limit'])) {
@@ -261,8 +278,7 @@ final class DOORZZ_REAL_ESTATE {
 	 */
 	private static function _get_items($params = []) {
 		$response = wp_remote_post(
-			'http://localhost:3000/wp/list',
-			// self::ROOT_URL . 'wp/list',
+			WP_DEBUG ? 'http://localhost:3000/wp/list' : self::ROOT_URL . 'wp/list',
 			 array(
 			 	'method'		=> 'POST',
 				'headers'		=> array('Content-Type' => 'application/json'),
@@ -300,54 +316,68 @@ final class DOORZZ_REAL_ESTATE {
 				$template = self::_linerize($template);
 				
 				foreach ($items as $idx => $item) {
-					try {
-						$item['pics'] = json_decode($item['pics'], true);
-					} catch (Exception $e) {
-						$item['pics'] = array();
-					}
-					
-					try {
-						$item['formatted_location'] = json_decode($item['formatted_location'], true);
-					} catch (Exception $e) {
-						$item['formatted_location'] = array('en' => array());
-					}
-					
-					try {
-						$item['free_text'] = json_decode($item['free_text'], true);
-					} catch (Exception $e) {
-						if (empty($item['free_text'])) {
-							$item['free_text'] = 'Doorzz.com';
+					if (is_array($item)) {
+						try {
+							if ($item['pics']) {
+								$item['pics'] = json_decode($item['pics'], true);
+							} else {
+								$item['pics'] = array();
+							}
+						} catch (Exception $e) {
+							$item['pics'] = array();
 						}
+						
+						try {
+							if ($item['formatted_location']) {
+								$item['formatted_location'] = json_decode($item['formatted_location'], true);
+							} else {
+								$item['formatted_location'] = array('en' => array());
+							}
+						} catch (Exception $e) {
+							$item['formatted_location'] = array('en' => array());
+						}
+						
+						try {
+							if ($item['free_text']) {
+								$item['free_text'] = json_decode($item['free_text'], true);
+							} else {
+								$item['free_text'] = 'Doorzz.com';
+							}
+						} catch (Exception $e) {
+							if (empty($item['free_text'])) {
+								$item['free_text'] = 'Doorzz.com';
+							}
+						}
+						
+						if (!count($item['pics'])) {
+							$img = self::CDN_URL . 'none';
+						} else if (isset($item['pics'][0]['url'])) {
+							$img = $item['pics'][0]['url'];
+						} else {
+							$img = self::CDN_URL . 'uploads/' . $item['pics'][0]['_id'] . '.jpg';
+						}
+						
+						$t = str_replace('{{LINK_TO_HID}}', esc_url(self::LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
+						$t = str_replace('{img}', esc_url(self::_xss_cleanup($img)), $t);
+						$t = str_replace('{name}', self::_xss_cleanup($item['name']), $t);
+						$t = str_replace('{price}', self::_xss_cleanup($item['param_price']), $t);
+						$t = str_replace('{period}', self::$PERIODS[$item['period']], $t);
+						$t = str_replace('{size}', self::_xss_cleanup($item['param_size']), $t);
+						$t = str_replace('{title}', self::_xss_cleanup($item['name']), $t);
+						$t = str_replace('{type}', $item['filter_sell'] ? 'sale' : 'rent', $t);
+						$t = str_replace('{subtype}', $item['filter_house'] ? 'house' : ($item['filter_apartment'] ? 'apartment' : 'commercial'), $t);
+						
+						$t = str_replace('{location}', self::_xss_cleanup(
+							(!empty($item['formatted_location']['en']['street']) ? $item['formatted_location']['en']['street'] . ', ' : '') . 
+							(!empty($item['formatted_location']['en']['city']) ? $item['formatted_location']['en']['city'] . ', ' : '') . 
+							$item['formatted_location']['en']['country']
+						), $t);
+						
+						// This might add the most text, so let's add it last.
+						$t = str_replace('{free_text}', esc_html(self::_xss_cleanup($item['free_text'])), $t);
+						
+						$out[] = $t;
 					}
-					
-					if (!count($item['pics'])) {
-						$img = self::CDN_URL . 'none';
-					} else if (isset($item['pics'][0]['url'])) {
-						$img = $item['pics'][0]['url'];
-					} else {
-						$img = self::CDN_URL . 'uploads/' . $item['pics'][0]['_id'] . '.jpg';
-					}
-					
-					$t = str_replace('{{LINK_TO_HID}}', esc_url(self::LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
-					$t = str_replace('{img}', esc_url(self::_xss_cleanup($img)), $t);
-					$t = str_replace('{name}', self::_xss_cleanup($item['name']), $t);
-					$t = str_replace('{price}', self::_xss_cleanup($item['param_price']), $t);
-					$t = str_replace('{period}', self::$PERIODS[$item['period']], $t);
-					$t = str_replace('{size}', self::_xss_cleanup($item['param_size']), $t);
-					$t = str_replace('{title}', self::_xss_cleanup($item['name']), $t);
-					$t = str_replace('{type}', $item['filter_sell'] ? 'sale' : 'rent', $t);
-					$t = str_replace('{subtype}', $item['filter_house'] ? 'house' : ($item['filter_apartment'] ? 'apartment' : 'commercial'), $t);
-					
-					$t = str_replace('{location}', self::_xss_cleanup(
-						(isset($item['formatted_location']['en']['street']) ? $item['formatted_location']['en']['street'] . ', ' : '') . 
-						(isset($item['formatted_location']['en']['city']) ? $item['formatted_location']['en']['city'] . ', ' : '') . 
-						$item['formatted_location']['en']['country']
-					), $t);
-					
-					// This might add the most text, so let's add it last.
-					$t = str_replace('{free_text}', esc_html(self::_xss_cleanup($item['free_text'])), $t);
-					
-					$out[] = $t;
 				}
 			}
 		}

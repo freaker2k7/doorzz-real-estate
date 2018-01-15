@@ -27,7 +27,7 @@ if (!defined('WPINC') || !class_exists('DOORZZ_REAL_ESTATE')) {
 			?></textarea>
 		</div>
 		<div class="input-field">
-			<button type="submit" name="DOORZZ_REAL_ESTATE_submit" value="save">Save</button>
+			<button type="submit" name="DOORZZ_REAL_ESTATE_submit" value="save" class="button button-primary">Save Changes</button>
 		</div>
 	</form>
 </div>
