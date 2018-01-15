@@ -127,7 +127,7 @@ final class DOORZZ_REAL_ESTATE {
 		}
 		
 		try {
-			$items = json_decode(self::_get_items($params), true);
+			$items = self::_get_items($params);
 		} catch (Exception $e) {
 			$items = [];
 			error_log($e->getMessage());
@@ -291,10 +291,10 @@ final class DOORZZ_REAL_ESTATE {
 		
 		if (is_wp_error($response)) {
 			$error_message = $response->get_error_message();
-			return '[]'; // The result will be json_decode(d)
+			return array(); // The result will be json_decode(d)
 		}
 		
-		return wp_remote_retrieve_body($response);
+		return json_decode(wp_remote_retrieve_body($response), true);
 	}
 	
 	
