@@ -244,7 +244,8 @@ final class DOORZZ_REAL_ESTATE {
 			$params['params'] = explode(',', $atts['params']);
 			foreach ($params['params'] as $key => &$value) {
 				$value = explode('=', $value);
-				$value = array($value[0] => array('min' => $value[1], 'max' => $value[1]));
+				$value[1] = explode('~', $value[1]);
+				$value = array($value[0] => array('min' => $value[1][0], 'max' => $value[1][1]));
 			}
 			$key .= '_' . $atts['params'];
 		}
