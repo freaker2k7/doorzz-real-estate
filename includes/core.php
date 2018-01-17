@@ -122,10 +122,6 @@ final class DOORZZ_REAL_ESTATE {
 		
 		$out = wp_cache_get($key);
 		
-		if ($out) {
-			return $out->data;
-		}
-		
 		try {
 			$items = self::_get_items($params);
 		} catch (Exception $e) {
@@ -223,8 +219,14 @@ final class DOORZZ_REAL_ESTATE {
 			$key .= '_15';
 		}
 		
+		if (isset($atts['hids'])) {
+			$params['hids'] = explode(',', $atts['hids']);
+			array_walk($params['hids'], 'trim');
+			$key .= '_' . preg_replace('/[^0-9a-zA-Z]/', '_', $atts['hids']);
+		}
+		
 		if (isset($atts['hid'])) {
-			$params['hid'] = explode(',', $atts['hid']);
+			$params['hid'] = $atts['hid'];
 			$key .= '_' . $atts['hid'];
 		}
 		
