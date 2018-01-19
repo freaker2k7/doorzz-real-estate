@@ -19,14 +19,15 @@ final class DOORZZ_REAL_ESTATE {
 	private static $LINK_TO_HID = 'https://dorz.me/id/';
 	
 	private static $DOORZZ_REAL_ESTATE_DEFAULT_TEMPLATE = 
-'<a style="display: inline-block; width: 250px; height: 100%; vertical-align: top; margin: 0 10px; text-decoration: none;" href="{{LINK_TO_HID}}" target="_blank">
-	<h2 style="font-size: 1rem;">{title}</h2>
-	<div style="width: 100%; height: 100px; overflow: hidden; background: #efefef; position: relative;">
-		<img src="{img}" alt="{free_text}" title="{free_text}" style="width: 100%; position: absolute; margin: auto; top: 0; left: 0; right: 0; bottom: 0;" />
+'<a style="display: inline-block; width: 250px; height: 100%; vertical-align: top; 
+		margin: 0 10px; text-decoration: none;" href="{{LINK_TO_HID}}" target="_blank">
+	<div style="width: 100%; height: 150px; overflow: hidden; background: #efefef; position: relative;">
+		<img src="{img}" alt="{free_text}" title="{free_text}" style="width: 100%; position: absolute; 
+				margin: auto; top: 0; left: 0; right: 0; bottom: 0; transform: scale(1.2);" />
 	</div>
-	<h2 style="text-transform: capitalize; font-size: 1rem; padding-top: 0.5rem; margin-bottom: 0;">
+	<h4 style="text-transform: capitalize; font-size: 1rem; margin-top: 0.5rem;">
 		<i class="local-icons {type} {subtype}"></i> {subtype} for {type}<br>
-		${price}/{period}<br>
+		<strong style="color: #4CAF50">${price}</strong>/{period}<br>
 		{location}
 	</h4>
 </a>';
@@ -370,7 +371,7 @@ final class DOORZZ_REAL_ESTATE {
 						$t = str_replace('{{LINK_TO_HID}}', esc_url(self::$LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
 						$t = str_replace('{img}', esc_url(self::_xss_cleanup($img)), $t);
 						$t = str_replace('{name}', self::_xss_cleanup($item['name']), $t);
-						$t = str_replace('{price}', self::_xss_cleanup($item['param_price']), $t);
+						$t = str_replace('{price}', number_format(self::_xss_cleanup($item['param_price'])), $t);
 						$t = str_replace('{period}', self::$PERIODS[$item['period']], $t);
 						$t = str_replace('{size}', self::_xss_cleanup($item['param_size']), $t);
 						$t = str_replace('{title}', self::_xss_cleanup($item['name']), $t);

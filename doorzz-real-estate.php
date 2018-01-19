@@ -4,7 +4,7 @@
  *
  * @package   doorzz-real-estate
  * @author    Evgeny Kolyakov <thenetfreaker@gmail.com>
- * @license   GPL-3.0+
+ * @license   GPL-2.0+
  * @link      https://doorzz.com
  * @copyright 2018 Evgeny Kolyakov
  *
