@@ -22,7 +22,7 @@ final class DOORZZ_REAL_ESTATE {
 '<a style="display: inline-block; width: 250px; height: 100%; vertical-align: top; 
 		margin: 0 10px; text-decoration: none;" href="{{LINK_TO_HID}}" target="_blank">
 	<div style="width: 100%; height: 150px; overflow: hidden; background: #efefef; position: relative;">
-		<img src="{img}" alt="{free_text}" title="{free_text}" style="width: 100%; position: absolute; 
+		<img src="{img}" alt="{free_text}" style="width: 100%; position: absolute; 
 				margin: auto; top: 0; left: 0; right: 0; bottom: 0; transform: scale(1.2);" />
 	</div>
 	<h4 style="text-transform: capitalize; font-size: 1rem; margin-top: 0.5rem;">
@@ -272,6 +272,11 @@ final class DOORZZ_REAL_ESTATE {
 			$params['limit'] = intval($atts['limit']);
 			$key .= '_' . $params['limit'];
 		}
+		
+		if (isset($atts['page'])) {
+			$params['page'] = intval($atts['page']);
+			$key .= '_' . $params['page'];
+		}
 	}
 	
 	
@@ -294,8 +299,8 @@ final class DOORZZ_REAL_ESTATE {
 		);
 		
 		if (is_wp_error($response)) {
-			$error_message = $response->get_error_message();
-			return array(); // The result will be json_decode(d)
+			error_log($response->get_error_message());
+			return array();
 		}
 		
 		return json_decode(wp_remote_retrieve_body($response), true);

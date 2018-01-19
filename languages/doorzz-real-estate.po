@@ -1,0 +1,24 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Text in echo
+#: admin.php:17
+msgid "Changes saved successfully!"
+msgstr ""
+
+#. Text in echo
+#: admin.php:11
+msgid "Doorzz Real Estate"
+msgstr ""
+
+#. Text in echo
+#: admin.php:35
+msgid "Save Changes"
+msgstr ""
+
+#. Text in echo
+#: admin.php:11
+msgid "Settings"
+msgstr ""
