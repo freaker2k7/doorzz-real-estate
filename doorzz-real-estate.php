@@ -4,9 +4,9 @@
  *
  * @package   doorzz-real-estate
  * @author    Evgeny Kolyakov <thenetfreaker@gmail.com>
- * @license   GPL-2.0+
+ * @license   GPLv2 or later
  * @link      https://doorzz.com
- * @copyright 2018 Evgeny Kolyakov
+ * @copyright 2018 Homzit, Inc.
  *
  * @wordpress-plugin
  * Plugin Name:       Doorzz Real Estate
@@ -16,8 +16,8 @@
  * Author:            Evgeny Kolyakov
  * Author URI:        https://doorzz.com
  * Text Domain:       real-estate
- * License:           GPL-2.0+
- * License URI:       https://www.gnu.org/licenses/gpl.html
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Domain Path:       /languages
  * GitHub Plugin URI: https://github.com/freaker2k7/doorzz-real-estate
  * GitHub Branch:     master
