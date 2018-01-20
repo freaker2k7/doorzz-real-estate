@@ -1,5 +1,5 @@
 === Doorzz Real Estate ===
-Contributors: evgenykolyakov
+Contributors: freaker2k7
 Tags: real-estate, doorzz.com, worldwide, sell, buy, rent, house, apartment, commercial, agent, shortcode
 Requires at least: 4.6
 Tested up to: 4.9.1
