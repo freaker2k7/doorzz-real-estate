@@ -246,6 +246,8 @@ final class DOORZZ_REAL_ESTATE {
 			foreach ($params['params'] as $key => &$value) {
 				$value = explode('=', $value);
 				$value[1] = explode('~', $value[1]);
+				$value[1][0] = !empty($value[1][0]) ? $value[1][0] : null;
+				$value[1][1] = !empty($value[1][1]) ? $value[1][1] : null;
 				$value = array($value[0] => array('min' => $value[1][0], 'max' => $value[1][1]));
 			}
 			$key .= '_' . $atts['params'];
@@ -374,13 +376,20 @@ final class DOORZZ_REAL_ESTATE {
 						}
 						
 						$t = str_replace('{{LINK_TO_HID}}', esc_url(self::$LINK_TO_HID . self::_xss_cleanup($item['hid'])), $template);
+						
+						if ($item['filter_sell']) {
+							$t = str_replace('/{period}', '', $t);
+							$t = str_replace('{type}', 'sale', $t);
+						} else {
+							$t = str_replace('{type}', 'rent', $t);
+							$t = str_replace('{period}', self::$PERIODS[$item['period']], $t);
+						}
+						
 						$t = str_replace('{img}', esc_url(self::_xss_cleanup($img)), $t);
 						$t = str_replace('{name}', self::_xss_cleanup($item['name']), $t);
 						$t = str_replace('{price}', number_format(self::_xss_cleanup($item['param_price'])), $t);
-						$t = str_replace('{period}', self::$PERIODS[$item['period']], $t);
 						$t = str_replace('{size}', self::_xss_cleanup($item['param_size']), $t);
 						$t = str_replace('{title}', self::_xss_cleanup($item['name']), $t);
-						$t = str_replace('{type}', $item['filter_sell'] ? 'sale' : 'rent', $t);
 						$t = str_replace('{subtype}', $item['filter_house'] ? 'house' : ($item['filter_apartment'] ? 'apartment' : 'commercial'), $t);
 						
 						$t = str_replace('{location}', self::_xss_cleanup(
