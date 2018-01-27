@@ -1,7 +1,15 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: Doorzz Real Estate v1.0\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: https://doorzz.com\n"
+"MIME-Version: 1.0\n"
+"Language: en\n"
+"X-Generator: Poedit 2.0.6\n"
 
 #. Text in echo
 #: admin.php:17
