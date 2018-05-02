@@ -6,7 +6,7 @@
  * @author    Evgeny Kolyakov <thenetfreaker@gmail.com>
  * @license   GPLv2 or later
  * @link      https://doorzz.com
- * @copyright 2018 Homzit, Inc.
+ * @copyright 2018 Doorzz, Inc.
  *
  * @wordpress-plugin
  * Plugin Name:       Doorzz Real Estate
