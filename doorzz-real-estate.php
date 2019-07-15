@@ -12,7 +12,7 @@
  * Plugin Name:       Doorzz Real Estate
  * Plugin URI:        https://doorzz.com
  * Description:       Get real estate worldwide.
- * Version:           1.0.0
+ * Version:           1.0
  * Author:            Evgeny Kolyakov
  * Author URI:        https://doorzz.com
  * Text Domain:       real-estate
