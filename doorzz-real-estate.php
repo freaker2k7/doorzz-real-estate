@@ -14,7 +14,7 @@
  * Description:       Get real estate worldwide.
  * Version:           1.0
  * Author:            Evgeny Kolyakov
- * Author URI:        https://doorzz.com
+ * Author URI:        https://profiles.wordpress.org/freaker2k17/
  * Text Domain:       real-estate
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html

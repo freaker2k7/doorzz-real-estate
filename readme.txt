@@ -1,5 +1,6 @@
 === Doorzz Real Estate ===
 Author: Evgeny Kolyakov
+Author URI: https://profiles.wordpress.org/freaker2k17/
 Contributors: freaker2k17
 Tags: real-estate, doorzz.com, worldwide, sell, buy, rent, house, apartment, commercial, agent, shortcode
 License: GPLv2 or later
